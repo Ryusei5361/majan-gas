@@ -3,7 +3,7 @@ function AVERAGEMAXPOINTS(points) {
   // 取得してくるまでに時間がかかるっぽく、取得前にアクセスしようとするとエラーになるので、取得されるまで待つ
   if (points.length != 30) Utilities.sleep(100)
   // B3:D32などのような入力ミスの場合、知らせる
-  if (points[0].length != 4) return "人数が足りません。"
+  if (points[0].length != 8) return "人数が足りません。"
 
   // 配列を転置する関数
   const transpose = a => a[0].slice().map((_, c) => a.map(r => r[c]));

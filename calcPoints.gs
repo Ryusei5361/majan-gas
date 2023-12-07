@@ -5,12 +5,14 @@ function CALCPOINTS(points) {
   const majanSheet = majanSpreadsheet.getSheetByName('結果')
   // 返しと順位点を途中で変えたくなったら、関数内で取ってこないで、引数に渡すようにする。
   // 返しを取得
-  const kaeshi = majanSheet.getRange('I4').getValue()
+  const kaeshi = majanSheet.getRange('M4').getValue()
   // 順位点を取得
-  let rankPoints = majanSheet.getRange('I1:L1').getValues()[0]
+  let rankPoints = majanSheet.getRange('M1:P1').getValues()[0]
+
+  return points[0].length
 
   // 取得してくるまでに時間がかかるっぽく、取得前にアクセスしようとするとエラーになるので、取得されるまで待つ
-  if (points[0].length != 4 || rankPoints.length != 4) Utilities.sleep(100)
+  if (points[0].length != 8 || rankPoints.length != 4) Utilities.sleep(100)
 
   // 一つでも空欄があれば終了
   if (points[0].some(a => a === '')) {

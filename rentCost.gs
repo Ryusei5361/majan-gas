@@ -7,10 +7,10 @@ function RENTCOST(points, nameAndCost) {
   // 名前を取得
   const people = resultSheet.getRange('B1:E1').getValues()[0]
   // レートを取得
-  const rate = resultSheet.getRange('I2').getValue()
+  const rate = resultSheet.getRange('M2').getValue()
 
   // 取得してくるまでに時間がかかるっぽく、取得前にアクセスしようとするとエラーになるので、取得されるまで待つ
-  if (points[0].length != 4 || nameAndCost.length != 2 || people.length != 4) Utilities.sleep(100)
+  if (points[0].length != 8 || nameAndCost.length != 2 || people.length != 4) Utilities.sleep(100)
 
   // 場代と債務者を代入
   const rentCost = nameAndCost[0]

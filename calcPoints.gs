@@ -9,9 +9,6 @@ function CALCPOINTS(points, rankPoints, diffView) {
   const kaeshi = majanSheet.getRange('M4').getValue()
   // 順位点を取得
   rankPoints = rankPoints[0]
-  // 名前を取得
-  const result = recordSheet.getRange('B4:E33')
-
 
   // 取得してくるまでに時間がかかるっぽく、取得前にアクセスしようとするとエラーになるので、取得されるまで待つ
   if (points.length != 30 || rankPoints.length != 4) Utilities.sleep(100)

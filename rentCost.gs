@@ -1,13 +1,14 @@
-function RENTCOST(points, nameAndCost) {
+function RENTCOST(points, rate, nameAndCost) {
 
-  // "結果"と"成績"のシートを取得
+  // "結果"のシートを取得
   const majanSpreadsheet = SpreadsheetApp.getActiveSpreadsheet()
   const resultSheet = majanSpreadsheet.getSheetByName('結果')
+  const recordSheet = majanSpreadsheet.getSheetByName('成績')
   // 名前とレートを途中で変えたくなったら、関数内で取ってこないで、引数に渡すようにする。
   // 名前を取得
-  const people = resultSheet.getRange('B1:E1').getValues()[0]
+  const people = recordSheet.getRange('B1:E1').getValues()[0]
   // レートを取得
-  const rate = resultSheet.getRange('M2').getValue()
+  // const rate = resultSheet.getRange('M2').getValue()
 
   // 取得してくるまでに時間がかかるっぽく、取得前にアクセスしようとするとエラーになるので、取得されるまで待つ
   if (points[0].length != 8 || nameAndCost.length != 2 || people.length != 4) Utilities.sleep(100)

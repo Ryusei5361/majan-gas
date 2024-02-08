@@ -17,11 +17,11 @@ function COUNTRANK(points) {
   let hantyan = 0
   // 誰が何位を何回取ったか集計
   // 参考:https://goma.pw/article/2017-01-31-0/
-  for (let i = 0; i < points.length; i++) { 
+  for (let i = 0; i < points.length; i++) {
+    // 風が入力されてないなどのエラー文であればスキップする
+    if (typeof(points[i][0]) === "string") continue
     // 1行すべて0であれば集計終了
-    if (points[i].every(a => a == 0)) {
-      break
-    }
+    if (points[i].every(a => a == 0)) break
     hantyan += 1
     // 降順にソートし、sortedに代入
     let sorted = vals[i].slice().sort(function(a, b){return b - a});

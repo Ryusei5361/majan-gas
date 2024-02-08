@@ -87,54 +87,6 @@ function CALCPOINTS(points, rankPoints, diffView) {
   }
 
   return points
-
-
-  // 一つでも空欄があれば終了
-  // if (points[0].some(a => a === '')) return
-  // 合計点が10万点でなければ知らせる
-  // if (points[0].reduce((sum, element) => sum + element, 0) !== 100000) return "点数が正しく入力されていません。"
-
-  // points配列をそのまま利用したいため、計算する前に順位を把握しておく
-  // 降順にソートし、sortedに代入。points配列はそのまま利用したいため、sliceでコピー
-  let sorted = points[0].slice().sort(function(a, b){return b - a});
-  // 何位か判定
-  let ranks = points[0].map(function(x){return sorted.indexOf(x)});
-
-  // 同じ順位がいたときの処理
-  // 起家に近い方を高い順位とする
-  if (isDuplicated(points[0])) {
-    if (isDuplicated(kaze)) return "風が重複しています。"
-    if (kaze.length !== 4) return "風がすべて入力されていません。"
-    let idxs = []; // 同じ順位の人のインデックスを格納する配列
-    let dubVal = duplicatedValue(ranks);  // かぶっている順位を取得
-    ranks.map(function(val, idx) {
-          if (val === dubVal) idxs.push(idx)
-      })
-    // 起家から遠い方を低い順位にする
-    kaze[idxs[0]] > kaze[idxs[1]] ? ranks[idxs[0]] = dubVal+1: ranks[idxs[1]] = dubVal+1
-  }
-
-  // 五捨六入して清算
-  for (let i = 0; i < points[0].length; i++) {
-    points[0][i] = Math.round(Math.abs(points[0][i]/1000) - 0.1) * Math.sign(points[0][i]) - kaeshi/1000;
-  }
-  // 順位点を加算
-  for (let j = 0; j < ranks.length; j++) {
-    points[0][j] += rankPoints[ranks[j]]
-  }
-
-  // 誤差
-  const diff = points[0].reduce((sum, element) => sum + element, 0)
-  // 誤差が生じた際に、誤差をトップに押し付ける
-  if (!diffView && diff != 0) {
-    const top = points[0].reduce((x, y) => {return Math.max(x, y)}) // トップの得点を取得
-    const topIdx = points[0].indexOf(top) // トップの得点のインデックスを取得
-    points[0][topIdx] += -diff // トップの得点に誤差を加算
-    // 一行で書くと↓
-    // points[0][points[0].indexOf(points[0].reduce((x, y) => {return Math.max(x, y)}))] += Math.abs(diff)
-  } 
-
-  return points
 }
 
 // 重複があるか判定する関数

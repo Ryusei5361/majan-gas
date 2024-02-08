@@ -3,7 +3,19 @@ function AVERAGEMAXPOINTS(points) {
   // 取得してくるまでに時間がかかるっぽく、取得前にアクセスしようとするとエラーになるので、取得されるまで待つ
   if (points.length != 30) Utilities.sleep(100)
   // B3:D32などのような入力ミスの場合、知らせる
-  if (points[0].length != 4) return "人数が足りません。"
+  if (points[0].length != 8) return "人数が足りません。"
+
+  // 風を取得
+  let order = points[0].filter(n => n%2 !== 0)
+
+  // 風を除いたpoints配列を作成
+  for (let i = 0; i< points.length; i++) {
+    if (points[i].every(a => a == 0)) {
+      break
+    }
+    for (let j = 0; j < 4; j++)
+      points[i].splice(j+1, 1)
+  }
 
   // 配列を転置する関数
   const transpose = a => a[0].slice().map((_, c) => a.map(r => r[c]));

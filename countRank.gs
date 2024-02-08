@@ -1,10 +1,10 @@
 function COUNTRANK(points) {
-  
+
+    // 取得してくるまでに時間がかかるっぽく、取得前にアクセスしようとするとエラーになるので、取得されるまで待つ
+  if (points.length != 30) Utilities.sleep(100)
+
   // 誰が何位を何回取ったかの表。行が人で、列が順位。
   let rankTable = Array(4).fill().map(() => Array(5).fill(0))
-
-  // 取得してくるまでに時間がかかるっぽく、取得前にアクセスしようとするとエラーになるので、取得されるまで待つ
-  if (points.length != 30) Utilities.sleep(100)
 
   // 半荘数
   let hantyan = 0

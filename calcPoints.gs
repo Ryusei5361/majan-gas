@@ -1,7 +1,7 @@
 function CALCPOINTS(points, rankPoints, diffView) {
 
   // 取得してくるまでに時間がかかるっぽく、取得前にアクセスしようとするとエラーになるので、取得されるまで待つ
-  if (points.length != 30 || rankPoints.length != 4) Utilities.sleep(100)
+  if (points.length != 30 || rankPoints[0].length != 4) Utilities.sleep(100)
 
   // "結果"というシートを取得
   const majanSpreadsheet = SpreadsheetApp.getActiveSpreadsheet()
@@ -9,8 +9,6 @@ function CALCPOINTS(points, rankPoints, diffView) {
   // 返しと順位点を途中で変えたくなったら、関数内で取ってこないで、引数に渡すようにする。
   // 返しを取得
   const kaeshi = majanSheet.getRange('M4').getValue()
-  // 順位点を取得
-  rankPoints = rankPoints[0]
 
   let kaze = Array(points.length).fill().map(() => Array(4).fill(0))
 
@@ -71,7 +69,7 @@ function CALCPOINTS(points, rankPoints, diffView) {
     }
     // 順位点を加算
     for (let j = 0; j < ranks.length; j++) {
-      points[i][j] += rankPoints[ranks[j]]
+      points[i][j] += rankPoints[0][ranks[j]]
     }
 
     // 誤差

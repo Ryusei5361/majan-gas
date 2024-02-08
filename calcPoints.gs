@@ -3,37 +3,100 @@ function CALCPOINTS(points, rankPoints, diffView) {
   // "結果"というシートを取得
   const majanSpreadsheet = SpreadsheetApp.getActiveSpreadsheet()
   const majanSheet = majanSpreadsheet.getSheetByName('結果')
+  const recordSheet = majanSpreadsheet.getSheetByName('成績')
   // 返しと順位点を途中で変えたくなったら、関数内で取ってこないで、引数に渡すようにする。
   // 返しを取得
   const kaeshi = majanSheet.getRange('M4').getValue()
   // 順位点を取得
   rankPoints = rankPoints[0]
+  // 名前を取得
+  const result = recordSheet.getRange('B4:E33')
 
 
   // 取得してくるまでに時間がかかるっぽく、取得前にアクセスしようとするとエラーになるので、取得されるまで待つ
-  if (points[0].length != 8 || rankPoints.length != 4) Utilities.sleep(100)
+  if (points.length != 30 || rankPoints.length != 4) Utilities.sleep(100)
 
-  // 風を取得
-  let kaze = points[0].filter(n => n%2 !== 0)
-  // 処理しやすいように数値に変換
-  if (kaze.length !== 0) {
-    for (let i = 0; i< kaze.length; i++) {
-      if (kaze[i] === '東') kaze.splice(i, 1, '0')
-      else if (kaze[i] === '南') kaze.splice(i, 1, '1')
-      else if (kaze[i] === '西') kaze.splice(i, 1, '2')
-      else if (kaze[i] === '北') kaze.splice(i, 1, '3')
+  let kaze = Array(points.length).fill().map(() => Array(4).fill(0))
+
+  for (let i = 0; i < points.length; i++) {
+    // 風を取得
+    kaze[i] = points[i].filter(n => n%2 !== 0)
+    // 処理しやすいように数値に変換
+    if (kaze[i].length !== 0) {
+      for (let j = 0; j< kaze[i].length; j++) {
+        if (kaze[i][j] === '東') kaze[i].splice(j, 1, '0')
+        else if (kaze[i][j] === '南') kaze[i].splice(j, 1, '1')
+        else if (kaze[i][j] === '西') kaze[i].splice(j, 1, '2')
+        else if (kaze[i][j] === '北') kaze[i].splice(j, 1, '3')
+      }
     }
+    // 風を除いたpoints配列を作成
+    for (let k = 0; k< 4; k++) {
+      points[i].splice(k+1, 1);
+    }
+    // points配列をそのまま利用したいため、計算する前に順位を把握しておく
+    // 降順にソートし、sortedに代入。points配列はそのまま利用したいため、sliceでコピー
+    let sorted = points[i].slice().sort(function(a, b){return b - a});
+    // 何位か判定
+    let ranks = points[i].map(function(x){return sorted.indexOf(x)});
+
+    if (points[i].every(a => a === '')) continue
+    if (points[i].some(a => a === '')) {
+      points[i] = ["点不足", , , ]
+      continue
+    }
+    if (points[i].reduce((sum, element) => sum + element, 0) !== 100000) {
+      points[i] = ["合計点不足", , , ]
+      continue
+    }
+    // 同じ順位がいたときの処理
+    // 起家に近い方を高い順位とする
+    if (isDuplicated(points[i])) {
+      if (isDuplicated(kaze[i])) {
+        points[i] = ["風重複", , , ]
+        continue
+      }
+      if (kaze[i].length !== 4) {
+        points[i] = ["風不足", , , ]
+        continue
+      }
+      let idxs = []; // 同じ順位の人のインデックスを格納する配列
+      let dubVal = duplicatedValue(ranks);  // かぶっている順位を取得
+      ranks.map(function(val, idx) {
+            if (val === dubVal) idxs.push(idx)
+        })
+      // 起家から遠い方を低い順位にする
+      kaze[i][idxs[0]] > kaze[i][idxs[1]] ? ranks[idxs[0]] = dubVal+1: ranks[idxs[1]] = dubVal+1
+    }
+
+    // 五捨六入して清算
+    for (let j = 0; j < points[i].length; j++) {
+      points[i][j] = Math.round(Math.abs(points[i][j]/1000) - 0.1) * Math.sign(points[i][j]) - kaeshi/1000;
+    }
+    // 順位点を加算
+    for (let j = 0; j < ranks.length; j++) {
+      points[i][j] += rankPoints[ranks[j]]
+    }
+
+    // 誤差
+    const diff = points[i].reduce((sum, element) => sum + element, 0)
+    // 誤差が生じた際に、誤差をトップに押し付ける
+    if (!diffView && diff != 0) {
+      const top = points[i].reduce((x, y) => {return Math.max(x, y)}) // トップの得点を取得
+      const topIdx = points[i].indexOf(top) // トップの得点のインデックスを取得
+      points[i][topIdx] += -diff // トップの得点に誤差を加算
+      // 一行で書くと↓
+      // points[i][points[i].indexOf(points[i].reduce((x, y) => {return Math.max(x, y)}))] += Math.abs(diff)
+    } 
   }
 
-  // 風を除いたpoints配列を作成
-  for (let i = 0; i< 4; i++) {
-    points[0].splice(i+1, 1);
-  }
+  return points
+
 
   // 一つでも空欄があれば終了
-  if (points[0].some(a => a === '')) return
+  // if (points[0].some(a => a === '')) return
   // 合計点が10万点でなければ知らせる
-  if (points[0].reduce((sum, element) => sum + element, 0) !== 100000) return "点数が正しく入力されていません。"
+  // if (points[0].reduce((sum, element) => sum + element, 0) !== 100000) return "点数が正しく入力されていません。"
 
   // points配列をそのまま利用したいため、計算する前に順位を把握しておく
   // 降順にソートし、sortedに代入。points配列はそのまま利用したいため、sliceでコピー

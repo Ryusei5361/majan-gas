@@ -11,7 +11,7 @@ function AVERAGEMAXPOINTS(points) {
   // 風を除いたpoints配列を作成
   for (let i = 0; i< points.length; i++) {
     // 1行すべて0であれば終了
-    if (points[i].every(a => a == 0)) break
+    if (points[i].every(a => a == 0)) continue
     for (let j = 0; j < 4; j++)
       points[i].splice(j+1, 1)
   }
@@ -21,7 +21,7 @@ function AVERAGEMAXPOINTS(points) {
   let hantyan = 0
   for (let i = 0; i < points.length; i++) {
     // 1行すべて0であれば終了
-    if (points[i].every(a => a == 0)) break
+    if (points[i].every(a => a == 0) || points[i].some(a => a == 0) || points[i].reduce((sum, element) => sum + element, 0) !== 100000) continue
     hantyan += 1
     avePts = avePts.map((x, idx) => {return (x + points[i][idx])})
   }

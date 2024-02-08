@@ -10,10 +10,10 @@ function CALCPOINTS(points, rankPoints, diffView) {
   // 返しを取得
   const kaeshi = majanSheet.getRange('M4').getValue()
 
+  // 風を保持しておく行列
   let kaze = Array(points.length).fill().map(() => Array(4).fill(0))
-
   for (let i = 0; i < points.length; i++) {
-    // 風を取得
+    // points配列から風だけを取得
     kaze[i] = points[i].filter(n => n%2 !== 0)
     // 処理しやすいように数値に変換
     if (kaze[i].length !== 0) {
@@ -33,7 +33,7 @@ function CALCPOINTS(points, rankPoints, diffView) {
     let sorted = points[i].slice().sort(function(a, b){return b - a});
     // 何位か判定
     let ranks = points[i].map(function(x){return sorted.indexOf(x)});
-
+    // 1行すべて無記入の場合、その行を飛ばす
     if (points[i].every(a => a === '')) continue
     if (points[i].some(a => a === '')) {
       points[i] = ["点不足", , , ]
@@ -46,15 +46,15 @@ function CALCPOINTS(points, rankPoints, diffView) {
     // 同じ順位がいたときの処理
     // 起家に近い方を高い順位とする
     if (isDuplicated(points[i])) {
-      if (isDuplicated(kaze[i])) {
-        points[i] = ["風重複", , , ]
-        continue
-      }
       if (kaze[i].length !== 4) {
         points[i] = ["風不足", , , ]
         continue
       }
-      let idxs = []; // 同じ順位の人のインデックスを格納する配列
+      if (isDuplicated(kaze[i])) {
+        points[i] = ["風重複", , , ]
+        continue
+      }
+      let idxs = []; // 同じ順位の人のインデックスを保持しておくための配列
       let dubVal = duplicatedValue(ranks);  // かぶっている順位を取得
       ranks.map(function(val, idx) {
             if (val === dubVal) idxs.push(idx)
@@ -63,18 +63,16 @@ function CALCPOINTS(points, rankPoints, diffView) {
       kaze[i][idxs[0]] > kaze[i][idxs[1]] ? ranks[idxs[0]] = dubVal+1: ranks[idxs[1]] = dubVal+1
     }
 
-    // 五捨六入して清算
+    // 五捨六入して順位点を加算
     for (let j = 0; j < points[i].length; j++) {
       points[i][j] = Math.round(Math.abs(points[i][j]/1000) - 0.1) * Math.sign(points[i][j]) - kaeshi/1000;
-    }
-    // 順位点を加算
-    for (let j = 0; j < ranks.length; j++) {
       points[i][j] += rankPoints[0][ranks[j]]
     }
 
-    // 誤差
+    // 誤差の処理
+    // 誤差が生じた場合、誤差をトップに押し付ける
     const diff = points[i].reduce((sum, element) => sum + element, 0)
-    // 誤差が生じた際に、誤差をトップに押し付ける
+    // diffViewで誤差の処理を行うか決める
     if (!diffView && diff != 0) {
       const top = points[i].reduce((x, y) => {return Math.max(x, y)}) // トップの得点を取得
       const topIdx = points[i].indexOf(top) // トップの得点のインデックスを取得

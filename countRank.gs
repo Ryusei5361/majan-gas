@@ -1,17 +1,10 @@
 function COUNTRANK(points) {
   
-  // "成績"というシートを取得
-  const majanSpreadsheet = SpreadsheetApp.getActiveSpreadsheet()
-  const recordSheet = majanSpreadsheet.getSheetByName('成績')
-  // 清算点を取得。とりあえず30半荘分
-  let vals = recordSheet.getRange('B4:E33').getValues()
-
   // 誰が何位を何回取ったかの表。行が人で、列が順位。
-  // let rankTable = [[0, 0, 0, 0, 0],[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
   let rankTable = Array(4).fill().map(() => Array(5).fill(0))
 
   // 取得してくるまでに時間がかかるっぽく、取得前にアクセスしようとするとエラーになるので、取得されるまで待つ
-  if (points.length != 30 || vals.length != 30) Utilities.sleep(100)
+  if (points.length != 30) Utilities.sleep(100)
 
   // 半荘数
   let hantyan = 0
@@ -24,9 +17,9 @@ function COUNTRANK(points) {
     if (points[i].every(a => a == 0)) break
     hantyan += 1
     // 降順にソートし、sortedに代入
-    let sorted = vals[i].slice().sort(function(a, b){return b - a});
+    let sorted = points[i].slice().sort(function(a, b){return b - a});
     // それぞれ何位か判定
-    let ranks = vals[i].slice().map(function(x){return sorted.indexOf(x)});
+    let ranks = points[i].slice().map(function(x){return sorted.indexOf(x)});
     // 何位を何回取ったか集計
     for (let j = 0; j < ranks.length; j++) {
       rankTable[j][ranks[j]] += 1

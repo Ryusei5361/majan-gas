@@ -3,7 +3,6 @@ function CALCPOINTS(points, rankPoints, diffView) {
   // "結果"というシートを取得
   const majanSpreadsheet = SpreadsheetApp.getActiveSpreadsheet()
   const majanSheet = majanSpreadsheet.getSheetByName('結果')
-  const recordSheet = majanSpreadsheet.getSheetByName('成績')
   // 返しと順位点を途中で変えたくなったら、関数内で取ってこないで、引数に渡すようにする。
   // 返しを取得
   const kaeshi = majanSheet.getRange('M4').getValue()

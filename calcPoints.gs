@@ -69,7 +69,6 @@ function CALCPOINTS(points, rankPoints, diffView) {
       points[i][j] += rankPoints[0][ranks[j]]
     }
 
-    // 誤差の処理
     // 誤差が生じた場合、誤差をトップに押し付ける
     const diff = points[i].reduce((sum, element) => sum + element, 0)
     // diffViewで誤差の処理を行うか決める
